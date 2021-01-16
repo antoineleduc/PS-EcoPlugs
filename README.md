@@ -2,7 +2,7 @@
 
 I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet into my tools, why not share it with other people?
 ## What you will need:
-<br><i>* Note: The outlet cannot be on the cloud, it needs to be local.</i>
+<i>* Note: The outlet cannot be on the cloud, it needs to be local.</i>
 <br>
 <br>1. Find the outlet's `IP address` and change the `$Endpoint` value.
 <br>2. Find your `Device ID` (in the APP's settings) and changet the `$DeviceID` value.
