@@ -1,5 +1,5 @@
 function Find-WionIP {
-    $IPaddress =  nmap 192.168.2.65-70
+    $IPaddress =  nmap 192.168.2.1-100
     $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
         $IPResult = $_.Context.PreContext[0]
         $regex = [regex] "\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
