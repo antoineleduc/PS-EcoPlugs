@@ -1,3 +1,15 @@
+function Find-WionIP {
+    $IPaddress =  nmap 192.168.2.65-70
+    $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
+        $IPResult = $_.Context.PreContext[0]
+        $regex = [regex] "\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+        $global:ecoplugip = $regex.Matches($IPResult) | %{ $_.value }
+        }
+
+    if($EcoPlugIP -match "192.168"){clear;Write-Host "Found EcoPlug Device on IP: $EcoPlugIP`n";pause}
+    elseif($EcoPlugIP -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
+    }
+
 function Enable-WiOn {
     Param(
         [parameter(Mandatory)]
