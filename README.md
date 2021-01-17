@@ -4,49 +4,29 @@ I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet 
 ## What you will need:
 <i>* Note: The outlet cannot be on the cloud, it needs to be local.</i>
 <br>
-<br>1. Find the outlet's `IP address` and change the `$Endpoint` value.
-<br>2. Find your `Device ID` (in the APP's settings) and changet the `$DeviceID` value.
+<br>1. Find the outlet's `IP address` and set the `-Endpoint` parameter.
+<br>2. Find your `Device ID` (in the APP's settings) and set the `-DeviceId` parameter.
+<br>
+<br>`Enable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
+<br>`Disable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
 <br>
 <br><b>ENJOY!</b>
 <br>
-<br>![alt text](https://github.com/antoineleduc/PS-EcoPlugs/blob/main/preview.png)
 
 ```powershell
-## Change the first 2 variables below for your own Device ID and IP. By default, ECO-Plugs devices should be listening on port 80.
-$deviceid = "ECO-7801F016" 
-$EndPoint = "192.168.2.69"
+function Enable-WiOn {
+    Param(
+        [parameter(Mandatory)]
+        [string]$DeviceID,
+        [parameter(Mandatory)]
+        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$Port = 80
+    )
 
-$Port = 80
-
-$enc = [system.Text.Encoding]::UTF8
-$id = $enc.GetBytes($deviceid)
-
-
-function Wion_OFF{ 
-
-    [Byte[]] $powerOff = 0x16, 0x00, 0x05, 0x00, 0x00, 0x00, 0xff, 0x07, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
-    $id[0], $id[1], $id[2], $id[3], $id[4], $id[5], $id[6], $id[7], $id[8], $id[9], $id[10], $id[11], 0x00, 0x00, 0x00, `
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x65, `
-    0x65, 0x7a, 0x65, 0x72, 0x20, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37, 0x38, 0x30, 0x41, 0x39, 0x45, 0x42, 0x33, `
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x25, 0x2f, 0x60, 0x5d, 0x00, 0x00, 0x00, 0x00, 0x6b, 0x20, `
-    0x0b, 0x42, 0x01, 0x00
-
-    $IP = [System.Net.Dns]::GetHostAddresses($EndPoint) 
-    $Address = [System.Net.IPAddress]::Parse($IP) 
-    $EndPoints = New-Object System.Net.IPEndPoint($Address, $Port) 
-    $Socket = New-Object System.Net.Sockets.UDPClient 
-    $SendMessage = $Socket.Send($powerOff, $powerOff.count, $EndPoints)
-    
-    $Reply = $Socket.Receive([ref]$EndPoints)
-    ## Note that the line above is for debugging the response from the Endpoint
-    
-    $Socket.Close()
-    }
-
-
-function Wion_ON{
+    # code to turn on light
+    $enc = [system.Text.Encoding]::UTF8
+    $id = $enc.GetBytes($deviceid)
 
     [Byte[]] $powerOn = 0x16, 0x00, 0x05, 0x00, 0x00, 0x00, 0xe6, 0x62, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
     $id[0], $id[1], $id[2], $id[3], $id[4], $id[5], $id[6], $id[7], $id[8], $id[9], $id[10], $id[11], 0x00, 0x00, 0x00, `
@@ -67,20 +47,40 @@ function Wion_ON{
     ## Note that the line above is for debugging the response from the Endpoint
     
     $Socket.Close()
-    }
+}
 
+function Disable-WiOn {
+    Param(
+        [parameter(Mandatory)]
+        [string]$DeviceID,
+        [parameter(Mandatory)]
+        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$Port = 80
+    )
 
-function WiOn-Menu{
-    clear
-    Write-Host "Select one of the following options:`n`n1. Turn Outlet ON`n2. Turn Outlet OFF`n"
-    $choices = $Host.UI.ReadLine()
+    # code to turn on light
+    $enc = [system.Text.Encoding]::UTF8
+    $id = $enc.GetBytes($deviceid) 
+
+    [Byte[]] $powerOff = 0x16, 0x00, 0x05, 0x00, 0x00, 0x00, 0xff, 0x07, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
+    $id[0], $id[1], $id[2], $id[3], $id[4], $id[5], $id[6], $id[7], $id[8], $id[9], $id[10], $id[11], 0x00, 0x00, 0x00, `
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x65, `
+    0x65, 0x7a, 0x65, 0x72, 0x20, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37, 0x38, 0x30, 0x41, 0x39, 0x45, 0x42, 0x33, `
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, `
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x25, 0x2f, 0x60, 0x5d, 0x00, 0x00, 0x00, 0x00, 0x6b, 0x20, `
+    0x0b, 0x42, 0x01, 0x00
+
+    $IP = [System.Net.Dns]::GetHostAddresses($EndPoint) 
+    $Address = [System.Net.IPAddress]::Parse($IP) 
+    $EndPoints = New-Object System.Net.IPEndPoint($Address, $Port) 
+    $Socket = New-Object System.Net.Sockets.UDPClient 
+    $SendMessage = $Socket.Send($powerOff, $powerOff.count, $EndPoints)
     
-    if($choices -eq 1){Wion_ON}
-    elseif($choices -eq 2){Wion_OFF}
-    elseif($choices -notin 1..2){clear; Write-Host "Please enter a valid input [1-2]`n" -ForegroundColor Red; Sleep 1}
-    get-job | wait-job
-    WiOn-Menu
-    }
-
-WiOn-Menu
+    $Reply = $Socket.Receive([ref]$EndPoints)
+    ## Note that the line above is for debugging the response from the Endpoint
+    
+    $Socket.Close()
+}
 ```
