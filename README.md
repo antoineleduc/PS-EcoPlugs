@@ -14,7 +14,7 @@ I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet 
 <br>
 
 ```powershell
-function Find-WionIP {
+function Find-Wion {
     $IPaddress =  nmap 192.168.1-2.1-100
     $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
         $IPResult = $_.Context.PreContext[0]
