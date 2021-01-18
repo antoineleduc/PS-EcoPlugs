@@ -10,33 +10,48 @@ I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet 
 <br>`Enable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
 <br>`Disable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
 <br>
+<br>If you don't specify the Device ID or Endpoint, you will be asked for it once you run the function.
+<br>
+<br>You can also run Find-Wion to automatically lookup your whole network (192.168.1-2.1-99) but that takes a bit more time. That being said, it is a great way to find your Device ID and IP address as your Eco-Plug device ID is "ECO-[last 8 characters of its MAC Address]". The function automatically assigns the `$DeviceID` and `$Endpoint` variables based on the results. I haven't tested it with multiples devices yet as I currently only own 1 single outlet from Eco-Plug (Woods Wion).
+<br>
 <br><b>ENJOY!</b>
 <br>
 
 ```powershell
 function Find-Wion {
-    $IPaddress =  nmap 192.168.1-2.1-100
+    $IPaddress =  nmap 192.168.1-2.1-99
     $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
         $IPResult = $_.Context.PreContext[0]
-        $regex = [regex] "\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
-        $global:ecoplugip = $regex.Matches($IPResult) | %{ $_.value }
+        $MACaddress = $ipaddress | Select-string -Pattern "(38:2B:78)"
+        $MACResult = ($Macaddress -split(" ") | Select-String '.*:.*:.*:.*:.*:.*').Line
+        $Mac2DeviceID = $MACResult.Replace(":","")
+        $ECOID = $Mac2DeviceID.Substring($mac2.Length -8)
+        $regex = [regex] "\b(?:(?:25[0r-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+        
+        $global:endpoint = $regex.Matches($IPResult) | %{ $_.value }
+        $global:deviceid = "ECO-$ECOID"
+
         }
 
-    if($EcoPlugIP -match "192.168"){clear;Write-Host "Found EcoPlug Device on IP: $EcoPlugIP`n";pause}
-    elseif($EcoPlugIP -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
+    if($Endpoint -match "192.168"){clear;Write-Host "Found EcoPlug Device $deviceid on IP: $EcoPlugIP`n";pause}
+    elseif($Endpoint -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
     }
 
 function Enable-WiOn {
     Param(
-        [parameter(Mandatory)]
-        [string]$DeviceID,
-        [parameter(Mandatory)]
-        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$DeviceID = $DeviceID,
+        [parameter(Mandatory=$false)]
+        [string]$Endpoint = $Endpoint,
         [parameter(Mandatory=$false)]
         [string]$Port = 80
     )
 
     # code to turn on light
+
+    if($DeviceID -notmatch "ECO-"){$global:DeviceID = Read-Host "Enter your Device ID: "}
+    if($Endpoint -notmatch "192.168"){$global:Endpoint = Read-Host "Enter your Device IP Address: "}
+
     $enc = [system.Text.Encoding]::UTF8
     $id = $enc.GetBytes($deviceid)
 
@@ -59,19 +74,28 @@ function Enable-WiOn {
     ## Note that the line above is for debugging the response from the Endpoint
     
     $Socket.Close()
+
+    Add-Type -AssemblyName System.Speech
+    $synthesizer = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer
+    $synthesizer.Speak('Wion Outlet enabled!')
+
 }
 
 function Disable-WiOn {
     Param(
-        [parameter(Mandatory)]
-        [string]$DeviceID,
-        [parameter(Mandatory)]
-        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$DeviceID = $DeviceID,
+        [parameter(Mandatory=$false)]
+        [string]$Endpoint = $Endpoint,
         [parameter(Mandatory=$false)]
         [string]$Port = 80
     )
 
     # code to turn on light
+
+    if($DeviceID -notmatch "ECO-"){$global:DeviceID = Read-Host "Enter your Device ID: "}
+    if($Endpoint -notmatch "192.168"){$global:Endpoint = Read-Host "Enter your Device IP Address: "}
+
     $enc = [system.Text.Encoding]::UTF8
     $id = $enc.GetBytes($deviceid) 
 
@@ -94,5 +118,9 @@ function Disable-WiOn {
     ## Note that the line above is for debugging the response from the Endpoint
     
     $Socket.Close()
+
+    Add-Type -AssemblyName System.Speech
+    $synthesizer = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer
+    $synthesizer.Speak('Wion Outlet disabled!')
 }
 ```
