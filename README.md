@@ -74,11 +74,6 @@ function Enable-WiOn {
     ## Note that the line above is for debugging the response from the Endpoint
     
     $Socket.Close()
-
-    Add-Type -AssemblyName System.Speech
-    $synthesizer = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer
-    $synthesizer.Speak('Wion Outlet enabled!')
-
 }
 
 function Disable-WiOn {
@@ -118,9 +113,5 @@ function Disable-WiOn {
     ## Note that the line above is for debugging the response from the Endpoint
     
     $Socket.Close()
-
-    Add-Type -AssemblyName System.Speech
-    $synthesizer = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer
-    $synthesizer.Speak('Wion Outlet disabled!')
 }
 ```
