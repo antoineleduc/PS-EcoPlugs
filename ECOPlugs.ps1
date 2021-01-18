@@ -1,26 +1,37 @@
 function Find-Wion {
-    $IPaddress =  nmap 192.168.1-2.1-100
+    $IPaddress =  nmap 192.168.1-2.1-99
     $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
         $IPResult = $_.Context.PreContext[0]
-        $regex = [regex] "\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
-        $global:ecoplugip = $regex.Matches($IPResult) | %{ $_.value }
+        $MACaddress = $ipaddress | Select-string -Pattern "(38:2B:78)"
+        $MACResult = ($Macaddress -split(" ") | Select-String '.*:.*:.*:.*:.*:.*').Line
+        $Mac2DeviceID = $MACResult.Replace(":","")
+        $ECOID = $Mac2DeviceID.Substring($mac2.Length -8)
+        $regex = [regex] "\b(?:(?:25[0r-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+        
+        $global:endpoint = $regex.Matches($IPResult) | %{ $_.value }
+        $global:deviceid = "ECO-$ECOID"
+
         }
 
-    if($EcoPlugIP -match "192.168"){clear;Write-Host "Found EcoPlug Device on IP: $EcoPlugIP`n";pause}
-    elseif($EcoPlugIP -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
+    if($Endpoint -match "192.168"){clear;Write-Host "Found EcoPlug Device $deviceid on IP: $EcoPlugIP`n";pause}
+    elseif($Endpoint -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
     }
 
 function Enable-WiOn {
     Param(
-        [parameter(Mandatory)]
-        [string]$DeviceID,
-        [parameter(Mandatory)]
-        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$DeviceID = $DeviceID,
+        [parameter(Mandatory=$false)]
+        [string]$Endpoint = $Endpoint,
         [parameter(Mandatory=$false)]
         [string]$Port = 80
     )
 
     # code to turn on light
+
+    if($DeviceID -notmatch "ECO-"){$global:DeviceID = Read-Host "Enter your Device ID: "}
+    if($Endpoint -notmatch "192.168"){$global:Endpoint = Read-Host "Enter your Device IP Address: "}
+
     $enc = [system.Text.Encoding]::UTF8
     $id = $enc.GetBytes($deviceid)
 
@@ -47,15 +58,19 @@ function Enable-WiOn {
 
 function Disable-WiOn {
     Param(
-        [parameter(Mandatory)]
-        [string]$DeviceID,
-        [parameter(Mandatory)]
-        [string]$Endpoint,
+        [parameter(Mandatory=$false)]
+        [string]$DeviceID = $DeviceID,
+        [parameter(Mandatory=$false)]
+        [string]$Endpoint = $Endpoint,
         [parameter(Mandatory=$false)]
         [string]$Port = 80
     )
 
     # code to turn on light
+
+    if($DeviceID -notmatch "ECO-"){$global:DeviceID = Read-Host "Enter your Device ID: "}
+    if($Endpoint -notmatch "192.168"){$global:Endpoint = Read-Host "Enter your Device IP Address: "}
+
     $enc = [system.Text.Encoding]::UTF8
     $id = $enc.GetBytes($deviceid) 
 
