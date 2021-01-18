@@ -7,12 +7,12 @@ I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet 
 <br>1. Find the outlet's `IP address` and set the `-Endpoint` parameter.
 <br>2. Find your `Device ID` (in the APP's settings) and set the `-DeviceId` parameter.
 <br>
-<br>`Enable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
-<br>`Disable-WiOn -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
+<br>`Enable-EcoPlug -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
+<br>`Disable-EcoPlug -DeviceId ECO-7801F016 -Endpoint 192.168.2.69`
 <br>
 <br>If you don't specify the Device ID or Endpoint, you will be asked for it once you run the function.
 <br>
-<br>You can also run Find-Wion to automatically lookup your whole network (192.168.1-2.1-99) but that takes a bit more time. That being said, it is a great way to find your Device ID and IP address as your Eco-Plug device ID is "ECO-[last 8 characters of its MAC Address]". The function automatically assigns the `$DeviceID` and `$Endpoint` variables based on the results. 
+<br>You can also run Find-EcoPlug to automatically lookup your whole network (192.168.1-2.1-99) but that takes a bit more time. That being said, it is a great way to find your Device ID and IP address as your Eco-Plug device ID is "ECO-[last 8 characters of its MAC Address]". The function automatically assigns the `$DeviceID` and `$Endpoint` variables based on the results. 
 <br>
 <br>I haven't tested it with multiples devices yet as I currently only own 1 single outlet from Eco-Plug (Woods Wion).
 <br>
