@@ -22,7 +22,7 @@ I decided to include my PowerShell code for Woods Wion (Eco-Plugs) smart outlet 
 <br>
 
 ```powershell
-function Find-Wion {
+function Find-EcoPlug {
     $IPaddress =  nmap 192.168.1-2.1-99
     $ResultList = $IPaddress | Select-String -Pattern "(38:2B:78)" -AllMatches -Context 1,0 | % {
         $IPResult = $_.Context.PreContext[0]
@@ -41,7 +41,7 @@ function Find-Wion {
     elseif($Endpoint -notmatch "192.168"){clear;Write-Host "No EcoPlug Device found`n";pause}
     }
 
-function Enable-WiOn {
+function Enable-EcoPlug {
     Param(
         [parameter(Mandatory=$false)]
         [string]$DeviceID = $DeviceID,
@@ -80,7 +80,7 @@ function Enable-WiOn {
     $Socket.Close()
 }
 
-function Disable-WiOn {
+function Disable-EcoPlug {
     Param(
         [parameter(Mandatory=$false)]
         [string]$DeviceID = $DeviceID,
