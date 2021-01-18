@@ -132,9 +132,9 @@ function Set-EcoPlugTimer{
 
     Enable-EcoPlug
 
-    $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-WindowStyle Hidden -command "Disable-EcoPlug"'
+    $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-WindowStyle Hidden -command "Disable-EcoPlug; Unregister-ScheduledTask -TaskName AutoDisableEcoPlug -Confirm:$false"'
     $trigger =  New-ScheduledTasktrigger -once -at $AlertTime
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Auto-Disable EcoPlug" -Description "Scheduled disabling of EcoPlug"
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "AutoDisableEcoPlug" -Description "Scheduled disabling of EcoPlug"
     }
 
 function Set-EcoPlugAlarm{
