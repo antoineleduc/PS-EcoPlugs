@@ -118,4 +118,38 @@ function Disable-EcoPlug {
     
     $Socket.Close()
 }
+
+function Set-EcoPlugTimer{
+    clear
+    $TimerHours = Read-Host "Hours [HH]: "
+    $TimerMinutes = Read-Host "Minutes [mm]: "
+    $TimerSeconds = Read-Host "Seconds [ss]: "
+    Write-Host "`nThe device will be ON for $TimerHours Hours, $TimerMinutes minutes, $TimerSeconds seconds"
+    pause
+
+    $CurrentTime = Get-Date
+    $AlertTime = $CurrentTime.addHours($TimerHours).AddMinutes($TimerMinutes).AddSeconds($TimerSeconds) 
+
+    Enable-EcoPlug
+
+    $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-WindowStyle Hidden -command "Disable-EcoPlug"'
+    $trigger =  New-ScheduledTasktrigger -once -at $AlertTime
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Auto-Disable EcoPlug" -Description "Scheduled disabling of EcoPlug"
+    }
+
+function Set-EcoPlugAlarm{
+    clear
+    $AlarmHours = Read-Host "Hours [HH]: "
+    $AlarmMinutes = Read-Host "Minutes [mm]: "
+    $AMPM = Read-Host "AM/PM: "
+    Write-Host "`nThe device will be turned ON daily at "$AlarmHours":"$AlarmMinutes
+    pause
+
+    $AlarmDate = Get-date -Format MM/dd/yy
+    $AlarmTime = ($AlarmHours+":"+$AlarmMinutes+$AMPM)
+
+    $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-WindowStyle Hidden -command "Enable-EcoPlug"'
+    $trigger =  New-ScheduledTasktrigger -daily -At $AlarmTime
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Auto-Enable EcoPlug" -Description "Scheduled enabling of EcoPlug"
+    }
 ```
